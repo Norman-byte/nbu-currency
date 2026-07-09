@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<title>Курс monobank</title>
+<title>Курс НБУ</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -10,7 +10,7 @@
     padding: 0;
     width: 100%;
     height: 100%;
-    background: #000000;
+    background: linear-gradient(180deg, #0057B7 0%, #0057B7 55%, #FFD700 55%, #FFD700 100%);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow: hidden;
   }
@@ -31,30 +31,30 @@
     color: #ffffff;
     font-size: 15px;
     font-weight: 700;
-    letter-spacing: 0.2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   }
   .badge {
-    background: #000000;
+    background: rgba(255,255,255,0.25);
     color: #ffffff;
-    border: 1px solid #333;
     font-size: 10px;
     padding: 2px 8px;
     border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.4);
   }
   .list {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
     overflow-y: auto;
   }
   .row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #111111;
+    background: rgba(255,255,255,0.92);
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 9px 12px;
   }
   .cur {
     display: flex;
@@ -65,33 +65,29 @@
     font-size: 18px;
   }
   .code {
-    color: #ffffff;
+    color: #14213D;
     font-size: 13px;
-    font-weight: 600;
-  }
-  .rates {
-    text-align: right;
-  }
-  .buy {
-    color: #9be15d;
-    font-size: 14px;
     font-weight: 700;
   }
-  .sell {
-    color: #ff6b6b;
-    font-size: 12px;
+  .rate {
+    color: #0057B7;
+    font-size: 16px;
+    font-weight: 800;
   }
   .footer {
     margin-top: 8px;
     text-align: center;
-    color: #666;
+    color: #ffffff;
     font-size: 10px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   }
   .loading {
-    color: #888;
+    color: #14213D;
     text-align: center;
     padding: 20px;
     font-size: 13px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
   }
 </style>
 </head>
@@ -99,43 +95,40 @@
 
 <div class="wrap">
   <div class="header">
-    <div class="title">mono курс</div>
+    <div class="title">НБУ офіційний курс</div>
     <div class="badge">UAH</div>
   </div>
   <div class="list" id="list">
     <div class="loading">Завантаження...</div>
   </div>
-  <div class="footer">Купівля / Продаж · дані monobank, оновлення ~5 хв</div>
+  <div class="footer">Дані Національного банку України</div>
 </div>
 
 <script>
-  const PAIRS = [
-    { a: 840, flag: "🇺🇸", code: "USD" },
-    { a: 978, flag: "🇪🇺", code: "EUR" },
-    { a: 985, flag: "🇵🇱", code: "PLN" },
-    { a: 826, flag: "🇬🇧", code: "GBP" }
+  const CODES = [
+    { code: "USD", flag: "🇺🇸" },
+    { code: "EUR", flag: "🇪🇺" },
+    { code: "PLN", flag: "🇵🇱" },
+    { code: "GBP", flag: "🇬🇧" },
+    { code: "AED", flag: "🇦🇪" }
   ];
-  const UAH = 980;
 
   async function load() {
     const listEl = document.getElementById("list");
     try {
-      const res = await fetch("https://api.monobank.ua/bank/currency");
+      const res = await fetch("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json");
       const data = await res.json();
 
-      const rows = PAIRS.map(p => {
-        const found = data.find(d => d.currencyCodeA === p.a && d.currencyCodeB === UAH);
+      const rows = CODES.map(c => {
+        const found = data.find(d => d.cc === c.code);
         if (!found) return null;
         return `
           <div class="row">
             <div class="cur">
-              <span class="flag">${p.flag}</span>
-              <span class="code">${p.code}</span>
+              <span class="flag">${c.flag}</span>
+              <span class="code">${c.code}</span>
             </div>
-            <div class="rates">
-              <div class="buy">${found.rateBuy.toFixed(2)}</div>
-              <div class="sell">${found.rateSell.toFixed(2)}</div>
-            </div>
+            <div class="rate">${found.rate.toFixed(2)}</div>
           </div>
         `;
       }).filter(Boolean);
@@ -149,7 +142,7 @@
   }
 
   load();
-  setInterval(load, 5 * 60 * 1000);
+  setInterval(load, 60 * 60 * 1000);
 </script>
 
 </body>
