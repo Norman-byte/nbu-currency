@@ -62,8 +62,29 @@
     gap: 8px;
   }
   .flag {
-    font-size: 18px;
+    width: 22px;
+    height: 16px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
   }
+  .flag.usd { background: repeating-linear-gradient(180deg,#B22234 0 12%,#fff 12% 24%); }
+  .flag.usd::before { content:""; position:absolute; top:0; left:0; width:45%; height:53%; background:#3C3B6E; }
+  .flag.eur { background:#003399; }
+  .flag.eur::before { content:"★"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#FFCC00; font-size:10px; }
+  .flag.pln { background: linear-gradient(180deg,#fff 0 50%,#DC143C 50% 100%); }
+  .flag.gbp { background:#012169; }
+  .flag.gbp::before { content:""; position:absolute; inset:0; background:
+    linear-gradient(45deg, transparent 46%, #fff 46% 54%, transparent 54%),
+    linear-gradient(-45deg, transparent 46%, #fff 46% 54%, transparent 54%),
+    linear-gradient(#fff, #fff) center/100% 30%,
+    linear-gradient(90deg, #fff, #fff) center/30% 100%,
+    linear-gradient(#C8102E, #C8102E) center/100% 14%,
+    linear-gradient(90deg, #C8102E, #C8102E) center/14% 100%; }
+  .flag.aed { background: linear-gradient(180deg,#00732F 0 33%,#fff 33% 66%,#000 66% 100%); }
+  .flag.aed::before { content:""; position:absolute; top:0; left:0; width:25%; height:100%; background:#FF0000; }
   .code {
     color: #14213D;
     font-size: 13px;
@@ -106,11 +127,11 @@
 
 <script>
   const CODES = [
-    { code: "USD", flag: "🇺🇸" },
-    { code: "EUR", flag: "🇪🇺" },
-    { code: "PLN", flag: "🇵🇱" },
-    { code: "GBP", flag: "🇬🇧" },
-    { code: "AED", flag: "🇦🇪" }
+    { code: "USD", flagClass: "usd" },
+    { code: "EUR", flagClass: "eur" },
+    { code: "PLN", flagClass: "pln" },
+    { code: "GBP", flagClass: "gbp" },
+    { code: "AED", flagClass: "aed" }
   ];
 
   async function load() {
@@ -125,7 +146,7 @@
         return `
           <div class="row">
             <div class="cur">
-              <span class="flag">${c.flag}</span>
+              <span class="flag ${c.flagClass}"></span>
               <span class="code">${c.code}</span>
             </div>
             <div class="rate">${found.rate.toFixed(2)}</div>
